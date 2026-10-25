@@ -52,6 +52,8 @@ button.launch { margin-top: 4px; padding: 13px 25px; }
 .touch-button.fire { color: #08111e; background: #ffd166cc; }
 button { margin-top: 16px; border: 0; border-radius: 4px; padding: 12px 18px; color: #08111e; background: #ffd166; font-weight: 700; cursor: pointer; }
 button:hover { background: #ffe19a; }
+button.secondary-action { margin-top: 10px; padding: 8px 14px; color: #b7c7d3; background: transparent; }
+button.secondary-action:hover { color: #fff; background: #173b52; }
 button span { margin-left: 12px; }
 .controls { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: center; padding-top: 22px; color: #8095a7; font-size: 11px; }
 .controls b { color: #e9f1f5; }
