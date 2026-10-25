@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible problem in the game.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Tell us what you expected and what actually happened.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Chrome 126 on Android
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start mission 2
+        2. Collect the rapid-fire pickup
+        3. ...
+    validations:
+      required: true

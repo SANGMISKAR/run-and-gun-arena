@@ -18,6 +18,8 @@ function App() {
   const [health, setHealth] = useState(3);
   const [weapon, setWeapon] = useState('BLASTER');
   const [bossHealth, setBossHealth] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
     if (screen !== 'playing') return undefined;
@@ -43,6 +45,7 @@ function App() {
     let currentHealth = 3;
     let running = true;
     let audioContext;
+    pausedRef.current = false;
 
     const beep = (frequency, duration, type = 'square') => {
       try {
@@ -113,10 +116,14 @@ function App() {
       beep(70, 0.5, 'sawtooth');
     };
     const onKeyDown = (event) => {
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', ' ', 'a', 'd', 'w', 'Enter'].includes(event.key)) event.preventDefault();
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', ' ', 'a', 'd', 'w', 'Enter', 'p', 'P'].includes(event.key)) event.preventDefault();
       keys.add(event.key.toLowerCase());
       if (event.key === ' ' || event.key.toLowerCase() === 'w' || event.key.toLowerCase() === 'arrowup') jump();
       if (event.key.toLowerCase() === 'j' || event.key.toLowerCase() === 'z') shoot();
+      if (event.key.toLowerCase() === 'p' && running) {
+        pausedRef.current = !pausedRef.current;
+        setPaused(pausedRef.current);
+      }
       if (event.key === 'Enter' && !running) setScreen('menu');
     };
     const onKeyUp = (event) => keys.delete(event.key.toLowerCase());
@@ -131,7 +138,7 @@ function App() {
     window.runGunTouch = setTouch;
 
     const update = (delta) => {
-      if (!running) return;
+      if (!running || pausedRef.current) return;
       const seconds = Math.min(delta / 1000, 0.04);
       const movingLeft = keys.has('a') || keys.has('arrowleft') || touchKeys.has('left');
       const movingRight = keys.has('d') || keys.has('arrowright') || touchKeys.has('right');
@@ -153,7 +160,10 @@ function App() {
       player.cooldown = Math.max(0, player.cooldown - seconds);
       player.invulnerable = Math.max(0, player.invulnerable - seconds);
       player.weaponTimer = Math.max(0, player.weaponTimer - seconds);
-      if (player.weaponTimer === 0) player.weapon = 'BLASTER';
+      if (player.weaponTimer === 0 && player.weapon !== 'BLASTER') {
+        player.weapon = 'BLASTER';
+        setWeapon('BLASTER');
+      }
       if (keys.has('j') || keys.has('z') || touchKeys.has('fire')) shoot();
       spawnTimer -= seconds;
       if (!boss && currentScore < level.target && spawnTimer <= 0) { spawnEnemy(); spawnTimer = Math.max(0.55, 1.25 - currentScore / 1600); }
@@ -217,7 +227,16 @@ function App() {
     return () => { running = false; cancelAnimationFrame(animationFrame); window.removeEventListener('keydown', onKeyDown); window.removeEventListener('keyup', onKeyUp); delete window.runGunTouch; };
   }, [screen, selectedLevel]);
 
-  const start = (levelIndex = selectedLevel) => { setSelectedLevel(levelIndex); setScore(0); setHealth(3); setWeapon('BLASTER'); setBossHealth(0); setScreen('playing'); };
+  const start = (levelIndex = selectedLevel) => {
+    pausedRef.current = false;
+    setPaused(false);
+    setSelectedLevel(levelIndex);
+    setScore(0);
+    setHealth(3);
+    setWeapon('BLASTER');
+    setBossHealth(0);
+    setScreen('playing');
+  };
   const touchButton = (key, label) => <button className={`touch-button ${key}`} onPointerDown={() => window.runGunTouch?.(key, true)} onPointerUp={() => window.runGunTouch?.(key, false)} onPointerLeave={() => window.runGunTouch?.(key, false)}>{label}</button>;
 
   return (
@@ -226,10 +245,11 @@ function App() {
       <section className="game-frame">
         <canvas ref={canvasRef} width={WIDTH} height={HEIGHT} aria-label="Run and gun game arena" />
         {screen === 'menu' && <div className="overlay menu"><p className="eyebrow">SELECT MISSION</p><h2>Choose your drop zone</h2><div className="level-grid">{LEVELS.map((item, index) => <button key={item.name} className={selectedLevel === index ? 'level-card active' : 'level-card'} onClick={() => setSelectedLevel(index)}><b>0{index + 1}</b><strong>{item.name}</strong><small>{item.subtitle}</small><em>BOSS: {item.boss}</em></button>)}</div><button className="launch" onClick={() => start()}>Deploy ▶</button></div>}
-        {(screen === 'gameover' || screen === 'victory') && <div className="overlay"><p className="eyebrow">{screen === 'victory' ? 'MISSION COMPLETE' : 'MISSION FAILED'}</p><h2>{screen === 'victory' ? 'Base secured.' : 'Keep moving.'}</h2><p>You scored {score} points.</p><button className="launch" onClick={() => setScreen('menu')}>Mission select ↵</button></div>}
+        {screen === 'playing' && paused && <div className="overlay pause-overlay"><p className="eyebrow">SYSTEM PAUSED</p><h2>Hold position.</h2><p>Press P to resume the fight.</p><button className="launch" onClick={() => { pausedRef.current = false; setPaused(false); }}>Resume ▶</button></div>}
+        {(screen === 'gameover' || screen === 'victory') && <div className="overlay"><p className="eyebrow">{screen === 'victory' ? 'MISSION COMPLETE' : 'MISSION FAILED'}</p><h2>{screen === 'victory' ? 'Base secured.' : 'Keep moving.'}</h2><p>You scored {score} points.</p><button className="launch" onClick={() => start()}>Run it back ↻</button><button className="secondary-action" onClick={() => setScreen('menu')}>Mission select ↵</button></div>}
         {screen === 'playing' && <div className="touch-controls">{touchButton('left', '◀')}{touchButton('right', '▶')}{touchButton('jump', '▲')}{touchButton('fire', '●')}</div>}
       </section>
-      <footer className="controls"><span><b>A / D</b> move</span><span><b>W / SPACE</b> jump</span><span><b>J / Z</b> fire</span><span><b>OR USE TOUCH BUTTONS</b></span></footer>
+      <footer className="controls"><span><b>A / D</b> move</span><span><b>W / SPACE</b> jump</span><span><b>J / Z</b> fire</span><span><b>P</b> pause</span><span><b>OR USE TOUCH BUTTONS</b></span></footer>
     </main>
   );
 }
