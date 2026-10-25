@@ -1,0 +1,66 @@
+:root {
+  font-family: 'Courier New', monospace;
+  color: #f8f9fa;
+  background: #050b14;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { font: inherit; }
+
+.app-shell {
+  min-height: 100vh;
+  padding: clamp(24px, 5vw, 64px) clamp(16px, 6vw, 96px);
+  background: radial-gradient(circle at 10% 0%, #16314a 0, transparent 35%), #050b14;
+}
+
+.hero, .controls {
+  width: min(100%, 960px);
+  margin: 0 auto;
+}
+
+.hero { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 22px; }
+.eyebrow { margin: 0 0 8px; color: #ffd166; font-size: 11px; letter-spacing: .18em; font-weight: 700; }
+h1, h2 { font-family: Impact, 'Arial Narrow', sans-serif; text-transform: uppercase; }
+h1 { margin: 0; font-size: clamp(42px, 8vw, 76px); line-height: .85; letter-spacing: -.02em; }
+.subtitle { color: #90a4b6; font-size: 12px; margin: 14px 0 0; }
+.scoreboard { display: flex; gap: 28px; text-align: right; }
+.scoreboard div { display: grid; gap: 5px; }
+.scoreboard span { color: #90a4b6; font-size: 10px; letter-spacing: .16em; }
+.scoreboard strong { color: #ffd166; font-size: 20px; }
+.hearts { color: #ff6b6b !important; letter-spacing: 3px; }
+
+.game-frame { position: relative; width: min(100%, 960px); margin: 0 auto; overflow: hidden; border: 1px solid #2b5368; border-radius: 8px; box-shadow: 0 25px 80px #0008, 0 0 0 5px #0b1825; }
+canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+.overlay { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; padding: 24px; background: #06101ddd; text-align: center; }
+.overlay h2 { margin: 0 0 8px; font-size: clamp(42px, 7vw, 74px); }
+.overlay p:not(.eyebrow) { color: #b7c7d3; font-size: 13px; }
+.level-grid { display: flex; gap: 12px; max-width: 90%; margin: 18px 0; }
+.level-card { display: grid; min-width: 150px; gap: 5px; padding: 14px; border: 1px solid #416578; border-radius: 5px; color: #dceaf0; background: #102333; text-align: left; cursor: pointer; }
+.level-card:hover, .level-card.active { border-color: #ffd166; background: #18354a; }
+.level-card b { color: #ffd166; font-size: 11px; }
+.level-card strong { font-family: Impact, 'Arial Narrow', sans-serif; font-size: 19px; text-transform: uppercase; }
+.level-card small, .level-card em { color: #90a4b6; font-size: 10px; font-style: normal; }
+.level-card em { color: #ff8fa3; margin-top: 5px; }
+button.launch { margin-top: 4px; padding: 13px 25px; }
+.touch-controls { display: none; position: absolute; inset: auto 14px 14px; justify-content: space-between; pointer-events: none; }
+.touch-button { width: 48px; height: 48px; margin: 0 3px; padding: 0; border: 1px solid #ffffff66; border-radius: 50%; color: #fff; background: #071426aa; pointer-events: auto; touch-action: none; }
+.touch-button.left { margin-right: auto; }
+.touch-button.right { margin-right: auto; }
+.touch-button.jump { margin-left: auto; }
+.touch-button.fire { color: #08111e; background: #ffd166cc; }
+button { margin-top: 16px; border: 0; border-radius: 4px; padding: 12px 18px; color: #08111e; background: #ffd166; font-weight: 700; cursor: pointer; }
+button:hover { background: #ffe19a; }
+button span { margin-left: 12px; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: center; padding-top: 22px; color: #8095a7; font-size: 11px; }
+.controls b { color: #e9f1f5; }
+
+@media (max-width: 620px) {
+  .hero { align-items: start; flex-direction: column; }
+  .scoreboard { width: 100%; justify-content: space-between; text-align: left; }
+  .level-grid { flex-direction: column; width: min(260px, 90%); }
+  .level-card { min-width: 0; }
+  .touch-controls { display: flex; }
+  .controls { padding-bottom: 12px; }
+}
